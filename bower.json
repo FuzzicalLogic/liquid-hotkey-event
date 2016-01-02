@@ -1,6 +1,6 @@
 {
   "name": "liquid-hotkey-event",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "description": "Adds hotkey handling to elements and triggers a custom event",
   "private": true,
   "authors": [
