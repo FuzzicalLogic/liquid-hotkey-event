@@ -1,0 +1,33 @@
+{
+  "name": "liquid-hotkey-event",
+  "version": "0.1.0",
+  "description": "Adds hotkey handling to elements and triggers a custom event",
+  "private": true,
+  "authors": [
+    "Donald Atkinson"
+  ],
+  "keywords": [
+    "web-components",
+    "polymer",
+    "hotkey"
+  ],
+  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/FuzzicalLogic/liquid-hotkey-event.git"
+  },
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/FuzzicalLogic/liquid-hotkey-event",
+  "ignore": [],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
+    "iron-image": "polymerelements/iron-image#^1.0.0",
+    "paper-styles": "polymerelements/paper-styles#^1.0.0",
+    "test-fixture": "polymerelements/test-fixture#^1.0.0",
+    "web-component-tester": "polymer/web-component-tester#^3.4.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}
