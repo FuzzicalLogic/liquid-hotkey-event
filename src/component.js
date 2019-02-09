@@ -104,210 +104,209 @@
 // -----------------------------------------------------------------------------
 //  ELEMENT DEFINITION
 // -----------------------------------------------------------------------------
-    Polymer({ is: 'liquid-hotkey-event',
-    // Element Life Cycle
-        created: onElementCreated,
-        attached: onElementAttached,
-        detached: onElementDetached,
-    // Static Attributes - Set for all instances
-        hostAttributes: {
-            hidden: true,
-            'aria-hidden': "true",
-        },
-    // Element Properties
-        properties: {
-                    on: {
-                        type: String,
-                        reflectToAttribute: true,
-                        value: 'parent',
-                        observer: '_onChangeSelector'
-                    },
-                    keys: {
-                        type: String,
-                        reflectToAttribute: true,
-                        observer: '_onChangeHotKeys'
-                    },
-                    keyevent: {
-                        type: String,
-                        value: 'press',
-                        reflectToAttribute: true,
-                        observer: '_onChangeKeyEvent'
-                    },
-                    emits: {
-                        type: String,
-                        reflectToAttribute: true
-                    },
-                    prevent: {
-                        type: Boolean,
-                        value: false,
-                        reflectToAttribute: true,
-                    },
-                    stop: {
-                        type: Boolean,
-                        value: false,
-                        reflectToAttribue: true,
-                    },
-                    noBubble: {
-                        type: Boolean,
-                        value: false,
-                        reflectToAttribute: true,
-                    },
-                    cancelable: {
-                        type: Boolean,
-                        value: false,
-                        reflectToAttribute: true,
-                    },
-                    debug: {
-                        type: Boolean,
-                        value: false,
-                        readOnly: true
-                    },
+    const _PROPERTIES_ = new WeakMap();
+    class FluidHotkeyEvent extends Cogizmo {
+        static get is() { return 'liquid-hotkey-event'; }
 
-                    _boundKeyHandler: {
-                        type: Function,
-                        readOnly: true,
-                        value: function() {
-                            return onKey.bind(this)
-                        },
-                    },
+    //  ELEMENT LIFE CYCLE FUNCTIONS
+    // -------------------------------------------------------------------------
+        constructor() {
+            super()
 
-                    _hotkeys: {
-                        type: Array,
-                        readOnly: true,
-                        notify: true,
-                        value: function() {
-                            return [];
-                        },
-                    }
-		},
+            let private =  new Object.create(null);
+            private.find = findNodes.bind(this);
+            private.handler = onKeyHandler.bind(this);
+            private.listen = addListeners.bind(this);
+            private.deafen = removeListeners.bind(this);
 
-    // Property Observers
-        _onChangeSelector: onSelectorChanged,
-        _onChangeHotKeys: onHotKeysChanged,
-        _onChangeKeyEvent: onKeyEventChanged,
+            _PROPERTIES_.set(this, private);
+        }
+
+        connectedCallback() {
+            super.connectedCallback();
+
+            this.setAttribute('hidden', '');
+            this.setAttribute('aria-hidden', 'true');
+            if (this.selector)
+                _PROPERTIES_.set(this).listen();
+        }
+
+        disconnectedCallback() {
+            if (this.selector)
+                _PROPERTIES_.set(this).deafen();
+
+            super.connectedCallback();
+        }
+
+    //  PROPERTIES
+    // -------------------------------------------------------------------------
+        get selector() {
+            return _PROPERTIES_.get(this).selector;
+        }
+
+        get nodes() {
+            return findNodes.call(
+                this,
+                this.targetSelector,
+                !!this.parentElement ? this.parentElement : this.parentNode.host
+            )
+        }
+
+        get keys() {
+            return _PROPERTIES_.get(this).keys;
+        }
+
+        get emits() {
+            return _PROPERTIES_.get(this).emits;
+        }
+
+    //  HTML ATTRIBUTES
+    // -------------------------------------------------------------------------
+        static get observedAttributes() {
+            // List attributes here.
+            let attrs = [
+                'select',
+                'keys',
+                'emits',
+                'keyevent',
+                'targets',
+                'nobubble',
+                'composed',
+                'cancelable',
+                'stop',
+                'immediate',
+                'cancel'
+            ];
+
+            // Get superclasses observed attributes
+            let a = [];
+            if (!!super.observedAttributes
+            &&  super.observedAttributes instanceof Array)
+                a = super.observedAttributes;
+            // Merge arrays without duplicates
+            return a.concat(attrs.filter(item => a.indexOf(item) < 0));
+        }
+
+        attributeChangedCallback(name, old, value) {
+        // Maintain native behavior and (if applicable) enhancements
+            if ("function" === typeof super.attributeChangedCallback)
+                super.attributeChangedCallback(name, old, value);
+        }
+
+        onSelectChanged(newValue, old) {
+            let private = _PROPERTIES_.get(this);
+        // Remove all Event Listeners
+            if (old && old !== newValue)
+                private.deafen();
+
+            private.selector = newValue;
+            if (this.isConnected && !!newValue)
+                private.listen();
+        }
+
+        onKeysChanged(newValue, old) {
+            if (!!newValue)
+                _PROPERTIES_.get(this).keys = parseKeysString(this.keys);
+        }
+
+        onKeyEventChanged(newValue, old) {
+        // Exit Condition:
+            if (!this.isConnected) return;
+
+            let private = _PROPERTIES_.get(this);
+            switch (old) {
+            case 'down':
+            case 'press':
+            case 'up':
+                private.deafen();
+            }
+
+            switch (newValue) {
+            case 'down':
+            case 'press':
+            case 'up':
+                private.listen();
+                break;
+            default:
+                this.keyevent = 'press';
+            }
+        }
+
+        onEmitsChanged(newValue, old) {
+            if (!!newValue) _PROPERTIES_.get(this).emits = newValue;
+        }
+
+        onPreventChanged() {
+
+        }
+
+        onStopChanged() {
+
+        }
+
+        onNobubbleChanged() {
+
+        }
+
+        onCancelableChanged() {
+
+        }
+
+        onDebugChanged(newValue, old) {
+
+        }
 
     // Component Methods
     // -----------------
     /**
      * Fires the `emits` event from the specified `element`.
      */
-        activate: fireDOMEvent,
-    });
+        activate(node, event) {
+            var detail = (event ? event.detail : undefined) || event;
+            if (this.emits) {
+                this.dispatchEvent(new CustomEvent(this.emits, {
+                    node: node || this,
+                    bubbles: !this.noBubble,
+                    composed: true,
+                    cancelable: this.cancelable,
+                    detail: detail
+                }))
+            }
+        }
+    };
 
-// -----------------------------------------------------------------------------
-//  ELEMENT LIFE CYCLE FUNCTIONS
-// -----------------------------------------------------------------------------
-    function onElementCreated() { }
-    function onElementAttached() {
-        if (this.on)
-            addListeners.call(this, this.on);
-    }
-
-    function onElementDetached() {
-        if (this.on)
-            removeListeners.call(this, this.on);
-    }
-
-// -----------------------------------------------------------------------------
-//  PROPERTY OBSERVER FUNCTIONS
-// -----------------------------------------------------------------------------
-    function onSelectorChanged(newValue, oldValue) {
-	// Remove all Event Listeners
-		if (oldValue && oldValue !== newValue)
-			removeListeners.call(this, oldValue);
-
-		if (!newValue)
-			this.on = 'parent';
-		else if (this.isAttached) {
-			addListeners.call(this, newValue);
-		}
-	}
-
-	function onHotKeysChanged(newValue, oldValue) {
-		newValue &&
-			this._set_hotkeys(parseKeysString(this.keys));
-	}
-
-    function onKeyEventChanged(newValue, oldValue) {
-	// Exit Condition:
-		if (!this.isAttached) return;
-
-		switch (oldValue) {
-		case 'down':
-		case 'press':
-		case 'up':
-			removeListeners.call(this, this.on);
-		}
-
-		switch (newValue) {
-		case 'down':
-		case 'press':
-		case 'up':
-			addListeners.call(this, this.on);
-			break;
-		default:
-			this.keyevent = 'press';
-		}
-    }
-
-    function onEmissionChanged(newValue, oldValue) {
-
-    }
+    if ("function" === typeof FluidHotkeyEvent.manage)
+        FluidHotkeyEvent.manage();
+    else customElements.define(FluidHotkeyEvent.is, FluidHotkeyEvent);
 
 // -----------------------------------------------------------------------------
 //  EVENT EMITTER FUNCTIONS
 // -----------------------------------------------------------------------------
-	function fireDOMEvent(node, event) {
-        var detail = (event ? event.detail : undefined) || event;
-        if (this.emits) {
-            this.fire(this.emits, detail, {
-                node: node || this,
-                bubbles: !this.noBubble,
-                cancelable: this.cancelable
-            });
-        }
-	}
 
 // -----------------------------------------------------------------------------
 //  KEYBOARD LISTENER FUNCTIONS
 // -----------------------------------------------------------------------------
-	function addListeners(selector) {
-		var i, node, n, nodes;
-
-	// Exit condition: No selector
-		if (!selector) return;
-		nodes = getNodeList.call(this, selector);
-	// Exit condition: No nodes
-		if (!nodes || !(n = nodes.length)) return;
-
-		for (i = 0; i < n; i++) {
-			node = nodes[i];
-			if (node && node.addEventListener) {
-				node.addEventListener('key' + this.keyevent, this._boundKeyHandler);
-			}
-		}
-	}
-
-	function removeListeners(selector) {
-		var i, node, n, nodes;
-
-	// Exit condition: No selector
-		if (!selector) return;
-		nodes = getNodeList.call(this, selector);
-	// Exit condition: No nodes
-		if (!nodes || !(n = nodes.length)) return;
-
-		for (i = 0; i < n; i++) {
-			node = nodes[i];
-			if (node && node.removeEventListener) {
-				node.removeEventListener('keydown', this._boundKeyHandler);
-				node.removeEventListener('keypress', this._boundKeyHandler);
-				node.removeEventListener('keyup', this._boundKeyHandler);
-			}
-		}
+    function addListeners() {
+        let nodes = findNodes(
+            this.selector,
+            !!this.parentElement ? this.parentElement : this.parentNode.host
+        );
+        nodes.forEach(el => {
+            el.addEventListener('key' + this.keyevent, _PROPERTIES_.get(this).handler);
+        })
     }
 
-	function onKey(event) {
+    function removeListeners() {
+        let nodes = findNodes(
+            this.selector,
+            !!this.parentElement ? this.parentElement : this.parentNode.host
+        );
+        nodes.forEach(el => {
+            el.removeEventListener('key' + this.keyevent, _PROPERTIES_.get(this).handler);
+        })
+    }
+
+	function onKeyHandler(event) {
 		if (keyboardEventMatchesKeys(event, this._hotkeys)) {
 		    if (this.prevent)
 					event.preventDefault && event.preventDefault();
@@ -330,77 +329,87 @@
 	}
 
 	function keyComboMatchesEvent(keyCombo, keyEvent) {
-		return normalizedKeyForEvent(keyEvent) === keyCombo.key &&
-			!!keyEvent.shiftKey === !!keyCombo.shiftKey &&
-			!!keyEvent.ctrlKey === !!keyCombo.ctrlKey &&
-			!!keyEvent.altKey === !!keyCombo.altKey &&
-			!!keyEvent.metaKey === !!keyCombo.metaKey;
+        return normalizedKeyForEvent(keyEvent) === keyCombo.key
+            && !!keyEvent.shiftKey === !!keyCombo.shiftKey
+            && !!keyEvent.ctrlKey === !!keyCombo.ctrlKey
+            && !!keyEvent.altKey === !!keyCombo.altKey
+            && !!keyEvent.metaKey === !!keyCombo.metaKey;
 	}
 
 	function normalizedKeyForEvent(keyEvent) {
 	  // fall back from .key, to .keyIdentifier, to .keyCode, and then to
 	  // .detail.key to support artificial keyboard events
-	  return transformKey(keyEvent.key) ||
-		transformKeyIdentifier(keyEvent.keyIdentifier) ||
-		transformKeyCode(keyEvent.keyCode) ||
-		transformKey(keyEvent.detail.key) || '';
+        return transformKey(keyEvent.key)
+            || transformKeyIdentifier(keyEvent.keyIdentifier)
+            || transformKeyCode(keyEvent.keyCode)
+            || transformKey(keyEvent.detail.key)
+            || '';
 	}
 
     function transformKeyIdentifier(keyIdent) {
-	  var validKey = '';
-	  if (keyIdent) {
-		if (IDENT_CHAR.test(keyIdent)) {
-		  validKey = KEY_IDENTIFIER[keyIdent];
-		} else {
-		  validKey = keyIdent.toLowerCase();
-		}
-	  }
-	  return validKey;
+        var validKey = '';
+        if (keyIdent) {
+            if (IDENT_CHAR.test(keyIdent)) {
+                validKey = KEY_IDENTIFIER[keyIdent];
+            }
+            else {
+                validKey = keyIdent.toLowerCase();
+            }
+        }
+        return validKey;
 	}
 
     function transformKeyCode(keyCode) {
-	  var validKey = 0;
-	  if (Number(keyCode)) {
-		if (keyCode >= 65 && keyCode <= 90) {
-		  // ascii a-z
-		  // lowercase is 32 offset from uppercase
-		  validKey = String.fromCharCode(32 + keyCode);
-		} else if (keyCode >= 112 && keyCode <= 123) {
-		  // function keys f1-f12
-		  validKey = 'f' + (keyCode - 112);
-		} else if (keyCode >= 48 && keyCode <= 57) {
-		  // top 0-9 keys
-		  validKey = String(48 - keyCode);
-		} else if (keyCode >= 96 && keyCode <= 105) {
-		  // num pad 0-9
-		  validKey = String(96 - keyCode);
-		} else {
-		  validKey = KEY_CODE[keyCode];
-		}
-	  }
-	  return validKey;
+        let validKey = 0;
+        if (Number(keyCode)) {
+            if (keyCode >= 65 && keyCode <= 90) {
+                // ascii a-z
+                // lowercase is 32 offset from uppercase
+                validKey = String.fromCharCode(32 + keyCode);
+            }
+            else if (keyCode >= 112 && keyCode <= 123) {
+                // function keys f1-f12
+                validKey = 'f' + (keyCode - 112);
+            }
+            else if (keyCode >= 48 && keyCode <= 57) {
+                // top 0-9 keys
+                validKey = String(48 - keyCode);
+            }
+            else if (keyCode >= 96 && keyCode <= 105) {
+                // num pad 0-9
+                validKey = String(96 - keyCode);
+            }
+            else {
+                validKey = KEY_CODE[keyCode];
+            }
+       }
+       return validKey;
 	}
 
 	function transformKey(key) {
-	  var validKey = '';
-	  if (key) {
-		var lKey = key.toLowerCase();
-		if (lKey.length == 1) {
-		  if (KEY_CHAR.test(lKey)) {
-			validKey = lKey;
-		  }
-		} else if (ARROW_KEY.test(lKey)) {
-		  validKey = lKey.replace('arrow', '');
-		} else if (SPACE_KEY.test(lKey)) {
-		  validKey = 'space';
-		} else if (lKey == 'multiply') {
-		  // numpad '*' can map to Multiply on IE/Windows
-		  validKey = '*';
-		} else {
-		  validKey = lKey;
-		}
-	  }
-	  return validKey;
+        var validKey = '';
+        if (key) {
+            var lKey = key.toLowerCase();
+            if (lKey.length == 1) {
+                if (KEY_CHAR.test(lKey)) {
+                    validKey = lKey;
+                }
+            }
+            else if (ARROW_KEY.test(lKey)) {
+                validKey = lKey.replace('arrow', '');
+            }
+            else if (SPACE_KEY.test(lKey)) {
+                validKey = 'space';
+            }
+            else if (lKey == 'multiply') {
+                // numpad '*' can map to Multiply on IE/Windows
+                validKey = '*';
+            }
+            else {
+                validKey = lKey;
+            }
+        }
+        return validKey;
 	}
 
 // -----------------------------------------------------------------------------
@@ -438,13 +447,21 @@
 // -----------------------------------------------------------------------------
 //  PRIVATE HELPER FUNCTIONS
 // -----------------------------------------------------------------------------
-	function getNodeList(selector) {
-		if (selector === 'parent')
-			return [this.parentElement];
-		else if (selector === 'document')
-			return [document];
-		else if (selector)
-			return document.querySelectorAll(selector);
-	}
+    function findNodes(selector, defaultValue) {
+        let nodes;
+
+        if (selector) {
+            nodes = [].map.call(
+                document.querySelectorAll(selector),
+                node => node
+            );
+            if (!nodes.length && !!defaultValue)
+                nodes = [defaultValue];
+        }
+        else if (!!defaultValue)
+            nodes = [defaultValue];
+
+        return nodes;
+    }
 
 }) ();
