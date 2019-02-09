@@ -1,3 +1,4 @@
+"use strict";
 (function registerElement() {
 // -----------------------------------------------------------------------------
 //  STATIC CONSTANTS
@@ -106,18 +107,18 @@
 // -----------------------------------------------------------------------------
     const _PROPERTIES_ = new WeakMap();
     class FluidHotkeyEvent extends Cogizmo {
-        static get is() { return 'liquid-hotkey-event'; }
+        static get is() { return 'fluid-hotkey-event'; }
 
     //  ELEMENT LIFE CYCLE FUNCTIONS
     // -------------------------------------------------------------------------
         constructor() {
             super()
 
-            let private =  new Object.create(null);
-            private.find = findNodes.bind(this);
-            private.handler = onKeyHandler.bind(this);
-            private.listen = addListeners.bind(this);
-            private.deafen = removeListeners.bind(this);
+            let priv =  Object.create(null);
+            priv.find = findNodes.bind(this);
+            priv.handler = onKeyHandler.bind(this);
+            priv.listen = addListeners.bind(this);
+            priv.deafen = removeListeners.bind(this);
 
             _PROPERTIES_.set(this, private);
         }
@@ -193,14 +194,14 @@
         }
 
         onSelectChanged(newValue, old) {
-            let private = _PROPERTIES_.get(this);
+            let priv = _PROPERTIES_.get(this);
         // Remove all Event Listeners
             if (old && old !== newValue)
-                private.deafen();
+                priv.deafen();
 
             private.selector = newValue;
             if (this.isConnected && !!newValue)
-                private.listen();
+                priv.listen();
         }
 
         onKeysChanged(newValue, old) {
@@ -212,19 +213,19 @@
         // Exit Condition:
             if (!this.isConnected) return;
 
-            let private = _PROPERTIES_.get(this);
+            let priv = _PROPERTIES_.get(this);
             switch (old) {
             case 'down':
             case 'press':
             case 'up':
-                private.deafen();
+                priv.deafen();
             }
 
             switch (newValue) {
             case 'down':
             case 'press':
             case 'up':
-                private.listen();
+                priv.listen();
                 break;
             default:
                 this.keyevent = 'press';
