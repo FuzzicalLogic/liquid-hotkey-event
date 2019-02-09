@@ -127,13 +127,12 @@
 
             this.setAttribute('hidden', '');
             this.setAttribute('aria-hidden', 'true');
-            if (this.selector)
-                _PROPERTIES_.set(this).listen();
+
+            if (this.selector) _PROPERTIES_.set(this).listen();
         }
 
         disconnectedCallback() {
-            if (this.selector)
-                _PROPERTIES_.set(this).deafen();
+            if (this.selector) _PROPERTIES_.set(this).deafen();
 
             super.connectedCallback();
         }
@@ -307,7 +306,7 @@
     }
 
 	function onKeyHandler(event) {
-		if (keyboardEventMatchesKeys(event, this._hotkeys)) {
+		if (keyboardEventMatchesKeys(event, this.keys)) {
 		    if (this.prevent)
 					event.preventDefault && event.preventDefault();
 		    if (this.stop)
