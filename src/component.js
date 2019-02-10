@@ -175,7 +175,7 @@
                 'select',
                 'keys',
                 'emits',
-                'keyevent',
+                'event',
                 'targets',
                 'nobubble',
                 'composed',
@@ -216,7 +216,7 @@
                 _PROPERTIES_.get(this).keys = parseKeysString(newValue);
         }
 
-        onKeyEventChanged(newValue, old) {
+        onEventChanged(newValue, old) {
         // Exit Condition:
             if (!this.isConnected) return;
 
