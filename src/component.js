@@ -157,7 +157,10 @@
         }
 
         get keyEvent() {
-            return _PROPERTIES_.get(this).keyEvent;
+            let priv = _PROPERTIES_.get(this);
+            if (!!!priv.keyEvent)
+                this.setAttribute('event', 'press');
+            return priv.keyEvent;
         }
 
         get emits() {
@@ -344,7 +347,8 @@
 	function normalizedKeyForEvent(keyEvent) {
 	  // fall back from .key, to .keyIdentifier, to .keyCode, and then to
 	  // .detail.key to support artificial keyboard events
-        return transformKey(keyEvent.key)
+        return transformCode(keyEvent.code)
+            || transformKey(keyEvent.key)
             || transformKeyIdentifier(keyEvent.keyIdentifier)
             || transformKeyCode(keyEvent.keyCode)
             || transformKey(keyEvent.detail.key)
@@ -363,6 +367,23 @@
         }
         return validKey;
 	}
+
+    function transformCode(code) {
+        const pfx = /^(?:key|digit|numpad|arrow)(.+)/,
+              sfx = /(.+)(?:left|right)$/;
+
+        let key = null, normal = code.toLowerCase();
+
+        if ((code !== "")
+        &&  (code !== "Unidentified")) {
+            let match = pfx.exec(normal);
+            if (match.length > 0) {
+                let res = pfx.exec(normal)[1];
+                if (res.length > 0) key = res;
+            }
+        }
+        return key;
+    }
 
     function transformKeyCode(keyCode) {
         let validKey = 0;
