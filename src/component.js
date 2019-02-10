@@ -156,6 +156,10 @@
             return _PROPERTIES_.get(this).keys;
         }
 
+        get keyEvent() {
+            return _PROPERTIES_.get(this).keyEvent;
+        }
+
         get emits() {
             return _PROPERTIES_.get(this).emits;
         }
@@ -206,7 +210,7 @@
 
         onKeysChanged(newValue, old) {
             if (!!newValue)
-                _PROPERTIES_.get(this).keys = parseKeysString(this.keys);
+                _PROPERTIES_.get(this).keys = parseKeysString(newValue);
         }
 
         onKeyEventChanged(newValue, old) {
@@ -225,11 +229,12 @@
             case 'down':
             case 'press':
             case 'up':
-                priv.listen();
+                priv.keyEvent = newValue;
                 break;
             default:
-                this.keyevent = 'press';
+                priv.keyEvent = 'press';
             }
+            priv.listen();
         }
 
         onEmitsChanged(newValue, old) {
@@ -292,7 +297,7 @@
             !!this.parentElement ? this.parentElement : this.parentNode.host
         );
         nodes.forEach(el => {
-            el.addEventListener('key' + this.keyevent, _PROPERTIES_.get(this).handler);
+            el.addEventListener('key' + this.keyEvent, _PROPERTIES_.get(this).handler);
         })
     }
 
@@ -302,7 +307,7 @@
             !!this.parentElement ? this.parentElement : this.parentNode.host
         );
         nodes.forEach(el => {
-            el.removeEventListener('key' + this.keyevent, _PROPERTIES_.get(this).handler);
+            el.removeEventListener('key' + this.keyEvent, _PROPERTIES_.get(this).handler);
         })
     }
 
