@@ -129,11 +129,11 @@
             this.setAttribute('hidden', '');
             this.setAttribute('aria-hidden', 'true');
 
-            if (this.selector) _PROPERTIES_.set(this).listen();
+            if (this.keys) _PROPERTIES_.get(this).listen();
         }
 
         disconnectedCallback() {
-            if (this.selector) _PROPERTIES_.set(this).deafen();
+            if (this.keys) _PROPERTIES_.get(this).deafen();
 
             super.connectedCallback();
         }

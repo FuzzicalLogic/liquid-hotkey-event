@@ -1,6 +1,6 @@
 {
   "name": "@cogizmo/fluid-hotkey-event",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Key handler that dispatches a custom event based on specified key combinations.",
   "main": "component.mjs",
   "scripts": {
