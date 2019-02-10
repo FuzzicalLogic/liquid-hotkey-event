@@ -120,7 +120,7 @@
             priv.listen = addListeners.bind(this);
             priv.deafen = removeListeners.bind(this);
 
-            _PROPERTIES_.set(this, private);
+            _PROPERTIES_.set(this, priv);
         }
 
         connectedCallback() {
@@ -203,7 +203,7 @@
             if (old && old !== newValue)
                 priv.deafen();
 
-            private.selector = newValue;
+            priv.selector = newValue;
             if (this.isConnected && !!newValue)
                 priv.listen();
         }
