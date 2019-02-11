@@ -167,6 +167,20 @@
             return _PROPERTIES_.get(this).emits;
         }
 
+        get bubbles() {
+            return _PROPERTIES_.get(this).bubbles;
+        }
+        set bubbles(value) {
+            _PROPERTIES_.get(this).bubbles = !!value;
+        }
+
+        get composed() {
+            return _PROPERTIES_.get(this).composed;
+        }
+        set composed(value) {
+            _PROPERTIES_.get(this).composed = !!value;
+        }
+
     //  HTML ATTRIBUTES
     // -------------------------------------------------------------------------
         static get observedAttributes() {
@@ -177,7 +191,7 @@
                 'emits',
                 'event',
                 'targets',
-                'nobubble',
+                'bubbles',
                 'composed',
                 'cancelable',
                 'stop',
@@ -244,7 +258,7 @@
             if (!!newValue) _PROPERTIES_.get(this).emits = newValue;
         }
 
-        onPreventChanged() {
+        onPreventChanged(newValue, old) {
 
         }
 
@@ -252,8 +266,14 @@
 
         }
 
-        onNobubbleChanged() {
+        onBubblesChanged(newValue, old) {
+            if (newValue !== old)
+                this.bubbles = !!newValue;
+        }
 
+        onComposedChanged(newValue, old) {
+            if (newValue !== old)
+                this.composed = !!newValue;
         }
 
         onCancelableChanged() {
@@ -274,8 +294,8 @@
             if (this.emits) {
                 this.dispatchEvent(new CustomEvent(this.emits, {
                     node: node || this,
-                    bubbles: !this.noBubble,
-                    composed: true,
+                    bubbles: this.bubbles,
+                    composed: this.composed,
                     cancelable: this.cancelable,
                     detail: detail
                 }))
