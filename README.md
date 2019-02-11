@@ -108,6 +108,17 @@ Space separated list of key combinations to match `KeyboardEvent`s against.
 </fluid-hotkey-event>
 ```
 
+### `prevent` attribute
+
+`Boolean` = `false`
+
+Whether or not call `preventDefault()` on handled `KeyboardEvent`s.
+
+```html
+<fluid-hotkey-event keys="alt+f4" prevent emits="do-not-close" bubbles composed>
+</fluid-hotkey-event>
+```
+
 ### `select` attribute
 
 `String<CSSSelector>`
@@ -155,6 +166,12 @@ Returns `Array`
 Returns `Array`
 
 List of nodes returned when queried using `element.selector`.
+
+### `element.preventDefault`
+
+returns `Boolean` = `false`
+
+Whether or not to call `preventDefault()` on handled `KeyboardEvent`s
 
 ### `element.selector` *ReadOnly*
 
