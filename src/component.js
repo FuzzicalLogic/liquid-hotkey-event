@@ -9,7 +9,7 @@
 	 * Most keys are labeled as text, but some are Unicode codepoints.
 	 * Values taken from: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html#KeySet-Set
 	 */
-	var KEY_IDENTIFIER = {
+	const KEY_IDENTIFIER = {
 	  'U+0009': 'tab',
 	  'U+001B': 'esc',
 	  'U+0020': 'space',
@@ -60,7 +60,7 @@
 	 *
 	 * Values from: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode#Value_of_keyCode
 	 */
-	var KEY_CODE = {
+	const KEY_CODE = {
 	  9: 'tab',
 	  13: 'enter',
 	  27: 'esc',
@@ -82,7 +82,7 @@
 	 * combo string to the property name that references those same keys
 	 * in a KeyboardEvent instance.
 	 */
-	var MODIFIER_KEYS = {
+	const MODIFIER_KEYS = {
 	  'shift': 'shiftKey',
 	  'ctrl': 'ctrlKey',
 	  'alt': 'altKey',
@@ -97,10 +97,10 @@
 	 * Apple-specific mapping. In this case, we
 	 * fall back to .keyCode.
 	 */
-	var KEY_CHAR = /[a-z0-9*]/;
-	var IDENT_CHAR = /U\+/;
-	var ARROW_KEY = /^arrow/; // Gecko 27.0+
-	var SPACE_KEY = /^space(bar)?/; // IE10 only = `spacebar`
+	const KEY_CHAR = /[a-z0-9*]/;
+	const IDENT_CHAR = /U\+/;
+	const ARROW_KEY = /^arrow/; // Gecko 27.0+
+	const SPACE_KEY = /^space(bar)?/; // IE10 only = `spacebar`
 
 // -----------------------------------------------------------------------------
 //  ELEMENT DEFINITION
@@ -159,8 +159,8 @@
         get keyEvent() {
             let priv = _PROPERTIES_.get(this);
             if (!!!priv.keyEvent)
-                this.setAttribute('event', 'press');
-            return priv.keyEvent;
+                this.setAttribute('event', 'up');
+            return `key${priv.keyEvent}`;
         }
 
         get emits() {
@@ -249,7 +249,7 @@
                 priv.keyEvent = newValue;
                 break;
             default:
-                priv.keyEvent = 'press';
+                priv.keyEvent = 'up';
             }
             priv.listen();
         }
@@ -318,7 +318,7 @@
             !!this.parentElement ? this.parentElement : this.parentNode.host
         );
         nodes.forEach(el => {
-            el.addEventListener('key' + this.keyEvent, _PROPERTIES_.get(this).handler);
+            el.addEventListener(this.keyEvent, _PROPERTIES_.get(this).handler);
         })
     }
 
@@ -328,7 +328,7 @@
             !!this.parentElement ? this.parentElement : this.parentNode.host
         );
         nodes.forEach(el => {
-            el.removeEventListener('key' + this.keyEvent, _PROPERTIES_.get(this).handler);
+            el.removeEventListener(this.keyEvent, _PROPERTIES_.get(this).handler);
         })
     }
 
@@ -395,7 +395,8 @@
         if ((code !== "")
         &&  (code !== "Unidentified")) {
             let match = pfx.exec(normal);
-            if (match.length > 0) {
+        // regexp.exec does not always return a value
+            if (!!match && match.length > 0) {
                 let res = pfx.exec(normal)[1];
                 if (res.length > 0) key = res;
             }

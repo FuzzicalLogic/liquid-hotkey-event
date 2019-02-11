@@ -88,9 +88,9 @@ The type of event to emit when a KeyboardEvent that is captured matches one or m
 
 ### `event` attribute
 
-`String` (`"up"` | `"down"` | `"press"`) = `"press"`
+`String` (`"up"` | `"down"` | `"press"`) = `"up"`
 
-Which KeyboardEvent to listen for: `keydown`, `keypress` or `keyup`
+The unprefixed KeyboardEvent to listen for: `keydown`, `keypress` or `keyup`
 
 ```html
 <fluid-hotkey-event keys="enter space" emits="select-item">
@@ -142,9 +142,9 @@ matched.
 
 ### `element.keyEvent` *ReadOnly*
 
-Returns `String` (`"up"` | `"down"` | `"press"`)
+Returns `String` (`"keyup"` | `"keydown"` | `"keypress"`) = `"keyup"`
 
-The unprefixed `KeyboardEvent`
+The prefixed `KeyboardEvent` this `<fluid-hotkey-event>` is listening for.
 
 ### `element.keys` *ReadOnly*
 
