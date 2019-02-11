@@ -266,14 +266,12 @@
 
         }
 
-        onBubblesChanged(newValue, old) {
-            if (newValue !== old)
-                this.bubbles = !!newValue;
+        onBubblesChanged() {
+            this.bubbles = !!this.hasAttribute('bubbles');
         }
 
-        onComposedChanged(newValue, old) {
-            if (newValue !== old)
-                this.composed = !!newValue;
+        onComposedChanged() {
+            this.composed = !!this.hasAttribute('composed');
         }
 
         onCancelableChanged() {
