@@ -190,10 +190,14 @@
         }
 
         get bubbles() {
-            return _PROPERTIES_.get(this).bubbles;
+            return this.hasAttribute('bubbles');
         }
         set bubbles(value) {
-            _PROPERTIES_.get(this).bubbles = !!value;
+            let chk = this.hasAttribute('bubbles');
+            if (!!value && !chk)
+                this.setAttribute('bubbles', '');
+            else if (!value && !!chk)
+                this.removeAttribute('bubbles');
         }
 
         get composed() {
@@ -213,7 +217,6 @@
                 'emits',
                 'event',
                 'targets',
-                'bubbles',
                 'composed',
                 'cancelable',
                 'immediate'
@@ -276,10 +279,6 @@
 
         onEmitsChanged(newValue, old) {
             if (!!newValue) _PROPERTIES_.get(this).emits = newValue;
-        }
-
-        onBubblesChanged() {
-            this.bubbles = !!this.hasAttribute('bubbles');
         }
 
         onComposedChanged() {
