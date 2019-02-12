@@ -163,6 +163,17 @@
             return `key${priv.keyEvent}`;
         }
 
+        get preventDefault() {
+            return this.hasAttribute('prevent');
+        }
+        set preventDefault(value) {
+            let chk = this.hasAttribute('prevent');
+            if (!!value && !chk)
+                this.setAttribute('prevent', '');
+            else if (!value && !!chk)
+                this.removeAttribute('prevent');
+        }
+
         get emits() {
             return _PROPERTIES_.get(this).emits;
         }
@@ -195,8 +206,7 @@
                 'composed',
                 'cancelable',
                 'stop',
-                'immediate',
-                'cancel'
+                'immediate'
             ];
 
             // Get superclasses observed attributes
@@ -256,10 +266,6 @@
 
         onEmitsChanged(newValue, old) {
             if (!!newValue) _PROPERTIES_.get(this).emits = newValue;
-        }
-
-        onPreventChanged(newValue, old) {
-
         }
 
         onStopChanged() {
@@ -334,8 +340,8 @@
 
 	function onKeyHandler(event) {
 		if (keyboardEventMatchesKeys(event, this.keys)) {
-		    if (this.prevent)
-					event.preventDefault && event.preventDefault();
+		    if (this.preventDefault)
+				event.preventDefault();
 		    if (this.stop)
 				event.stopPropagation && event.stopPropagation();
 			this.activate();
