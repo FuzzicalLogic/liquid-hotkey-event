@@ -190,17 +190,25 @@
         }
 
         get bubbles() {
-            return _PROPERTIES_.get(this).bubbles;
+            return this.hasAttribute('bubbles');
         }
         set bubbles(value) {
-            _PROPERTIES_.get(this).bubbles = !!value;
+            let chk = this.hasAttribute('bubbles');
+            if (!!value && !chk)
+                this.setAttribute('bubbles', '');
+            else if (!value && !!chk)
+                this.removeAttribute('bubbles');
         }
 
         get composed() {
-            return _PROPERTIES_.get(this).composed;
+            return this.hasAttribute('composed');
         }
         set composed(value) {
-            _PROPERTIES_.get(this).composed = !!value;
+            let chk = this.hasAttribute('composed');
+            if (!!value && !chk)
+                this.setAttribute('composed', '');
+            else if (!value && !!chk)
+                this.removeAttribute('composed');
         }
 
     //  HTML ATTRIBUTES
@@ -213,8 +221,6 @@
                 'emits',
                 'event',
                 'targets',
-                'bubbles',
-                'composed',
                 'cancelable',
                 'immediate'
             ];
@@ -276,14 +282,6 @@
 
         onEmitsChanged(newValue, old) {
             if (!!newValue) _PROPERTIES_.get(this).emits = newValue;
-        }
-
-        onBubblesChanged() {
-            this.bubbles = !!this.hasAttribute('bubbles');
-        }
-
-        onComposedChanged() {
-            this.composed = !!this.hasAttribute('composed');
         }
 
         onCancelableChanged() {
