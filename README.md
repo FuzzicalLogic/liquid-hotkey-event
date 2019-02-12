@@ -130,6 +130,17 @@ Used by `element.querySelectorAll` to attach the `KeyboardEvent` listeners.
 </fluid-hotkey-event>
 ```
 
+### `stop` attribute
+
+`Boolean` = `false`
+
+Whether or not call `stopPropagation()` on handled `KeyboardEvent`s.
+
+```html
+<fluid-hotkey-event keys="alt+f4" stop emits="do-not-close" bubbles composed>
+</fluid-hotkey-event>
+```
+
 ## Imperative API (JS)
 
 ### `element.bubbles`
@@ -178,6 +189,12 @@ Whether or not to call `preventDefault()` on handled `KeyboardEvent`s
 Returns `String<CSSSelector>`
 
 Selector that is used to add the event listeners.
+
+### `element.stopPropagation`
+
+returns `Boolean` = `false`
+
+Whether or not to call `stopPropagation()` on handled `KeyboardEvent`s
 
 ## DOM Events
 
