@@ -174,6 +174,17 @@
                 this.removeAttribute('prevent');
         }
 
+        get stopPropagation() {
+            return this.hasAttribute('stop');
+        }
+        set stopPropagation(value) {
+            let chk = this.hasAttribute('stop');
+            if (!!value && !chk)
+                this.setAttribute('stop', '');
+            else if (!value && !!chk)
+                this.removeAttribute('stop');
+        }
+
         get emits() {
             return _PROPERTIES_.get(this).emits;
         }
@@ -205,7 +216,6 @@
                 'bubbles',
                 'composed',
                 'cancelable',
-                'stop',
                 'immediate'
             ];
 
@@ -266,10 +276,6 @@
 
         onEmitsChanged(newValue, old) {
             if (!!newValue) _PROPERTIES_.get(this).emits = newValue;
-        }
-
-        onStopChanged() {
-
         }
 
         onBubblesChanged() {
@@ -342,8 +348,8 @@
 		if (keyboardEventMatchesKeys(event, this.keys)) {
 		    if (this.preventDefault)
 				event.preventDefault();
-		    if (this.stop)
-				event.stopPropagation && event.stopPropagation();
+		    if (this.stopPropagation)
+				event.stopPropagation();
 			this.activate();
 		}
 	}
