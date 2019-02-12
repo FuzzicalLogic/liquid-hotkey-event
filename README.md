@@ -55,7 +55,7 @@ element nodes that are being listened to.
 
 ### `bubbles` attribute
 
-`Boolean`
+`Boolean` = `false`
 
 Whether or not to allow the event emitted by `emits` to bubble through the DOM.
 
@@ -66,7 +66,7 @@ Whether or not to allow the event emitted by `emits` to bubble through the DOM.
 
 ### `composed` attribute
 
-`Boolean`
+`Boolean` = `false`
 
 Whether or not to allow bubbling event emitted by `emits` to penetrate Shadow DOM barriers.
 
@@ -145,13 +145,13 @@ Whether or not call `stopPropagation()` on handled `KeyboardEvent`s.
 
 ### `element.bubbles`
 
-`Boolean`
+Returns `Boolean` = `false`
 
 Whether or not to allow the event emitted by `emits` to bubble through the DOM.
 
 ### `element.composed`
 
-`Boolean`
+Returns `Boolean` = `false`
 
 Whether or not to allow bubbling event emitted by `emits` to penetrate Shadow DOM barriers.
 
@@ -180,7 +180,7 @@ List of nodes returned when queried using `element.selector`.
 
 ### `element.preventDefault`
 
-returns `Boolean` = `false`
+Returns `Boolean` = `false`
 
 Whether or not to call `preventDefault()` on handled `KeyboardEvent`s
 
@@ -192,7 +192,7 @@ Selector that is used to add the event listeners.
 
 ### `element.stopPropagation`
 
-returns `Boolean` = `false`
+Returns `Boolean` = `false`
 
 Whether or not to call `stopPropagation()` on handled `KeyboardEvent`s
 
